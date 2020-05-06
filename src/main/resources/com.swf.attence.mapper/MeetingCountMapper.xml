@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.swf.attence.mapper.MeetingCountMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.swf.attence.entity.MeetingCount">
+        <id column="id" property="id" />
+        <result column="userid" property="userid" />
+        <result column="acess_time" property="acessTime" />
+        <result column="acess_camera_id" property="acessCameraId" />
+        <result column="acess_state" property="acessState" />
+        <result column="fail_id" property="failId" />
+        <result column="message_state" property="messageState" />
+    </resultMap>
+
+</mapper>

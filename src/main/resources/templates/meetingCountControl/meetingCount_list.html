@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户会议签到信息</title>
+    <!-- 移动设备友好-->
+    <meta name="view-port" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <link href="#" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+    <script th:inline="javascript">
+        var username=document.getElementById("haha").value;
+
+    </script>
+</head>
+<body>
+<!-- 顶部栏引入-->
+<div th:replace="commons/bar::topbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <!--引入sidebar-->
+        <div th:replace="commons/bar::#sidebar(activeUri='meetingCount_list.html')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <h2 >
+                <a class="btn btn-sm btn-success" href="" th:href="@{/meetingCount}">添加用户签到信息</a>
+                <a class="btn btn-sm btn-info" th:href="@{/generate}">导出签到信息</a>
+            </h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm text-center">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>用户工号</th>
+                        <th>用户签到时间</th>
+                        <th>用户签到设备号</th>
+                        <th>用户请假状态</th>
+                        <th>用户会议签到状态</th>
+                        <th>短信下发状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="meetingCount:${meetingCountPageInfo.list}">
+                        <td th:text="${meetingCount.id}"></td>
+                        <td th:text="${meetingCount.userid}" id="username"></td>
+                        <td th:text="${meetingCount.acessTime}"></td>
+                        <td th:text="${meetingCount.acessCameraId}"></td>
+                        <td th:text="${meetingCount.failId}==1?'未请假':'已请假'"></td>
+                        <td>
+                            <a th:if="${meetingCount.acessState}==0" th:text="'正常签到'"></a>
+                            <a th:if="${meetingCount.acessState}==1" th:text="'迟到'"></a>
+                            <a th:if="${meetingCount.acessState}==2" th:text="'未签到'"></a>
+                        </td>
+                        <td th:text="${meetingCount.messageState}==0?'成功下发':'发送失败'">
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" th:href="@{/getUserLeaveMsg(username=${meetingCount.userid},day=${#strings.substring(meetingCount.acessTime,0,10)})}">查看该用户近期请假信息</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li>
+                            <a th:if="${not isFirstPage}"
+                               th:href="@{${'meetingCounts'}(pageNum=${pageNum -1},pageSize=${pageSize})}"
+                               aria-label="Previous" class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                            <a th:if="${isFirstPage}" href="javascript:void(0);" aria-label="Previous"
+                               class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li th:each="pageNo : ${#numbers.sequence(1, totalPages)}">
+                            <a th:if="${pageNum eq pageNo}" href="javascript:void(0);" class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                            <a th:if="${not (pageNum eq pageNo)}"
+                               th:href="@{${'meetingCounts'}(pageNum=${pageNo},pageSize=${pageSize})}" class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:if="${not isLastPage}"
+                               th:href="@{${'meetingCounts'}(pageNum=${pageNum+1},pageSize=${pageSize})}" aria-label="Next"
+                               class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            <a th:if="${isLastPage}" href="javascript:void(0);" aria-label="Next" class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+        <form id="deleteRootForm" method="post">
+            <input type="hidden" name="_method" value="delete"/>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+        th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+<script type="text/javascript" src="asserts/js/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.3/popper.js}"></script>
+<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.1.3/js/bootstrap.js}"></script>
+
+<!-- Icons -->
+<script type="text/javascript" src="asserts/js/feather.min.js" th:src="@{/static/asserts/js/feather.min.js}"></script>
+<script>
+    feather.replace()
+</script>
+<script>
+    $(".deleteBtn").click(function () {
+        //删除当前员工的
+        $("#deleteRootForm").attr("action", $(this).attr("del_uri")).submit();
+        return false;
+    });
+</script>
+
+</main>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+#  实际部署 需要确定文件夹 来修改file和PATH USERDATAPATH ATTENCEDATAPATH
+
+# 端口配置server:
+server:
+  port: 8086
+#mysql 链接配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/meeting?useSSL=false&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+# Thymeleaf 相关配置
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+    servlet:
+      content-type: text/html
+  mvc:
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/static/,classpath:/resources/,file:F:/AttenceSystem/
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#  main:
+#    allow-bean-definition-overriding: true
+#Mybaits相关配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    use-generated-keys: true
+  type-aliases-package: com.swf.attence.entity
+  mapper-locations: classpath:com.swf.attence.mapper/*.xml
+mybatis-plus:
+  type-aliases-package: com.swf.attence.entity
+  global-config:
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+    meta-object-handler: com.swf.attence.config.ModelMetaObjectHandler
+  mapper-locations: classpath:com.swf.attence.mapper/*.xml
+logging:
+  path: /AttenceSystem/log
+

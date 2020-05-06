@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息管理</title>
+    <!-- 移动设备友好-->
+    <meta name="view-port" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link href="#" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/webjars/bootstrap-fileinput/4.4.8/css/fileinput.css}" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部栏引入-->
+<div th:replace="commons/bar::topbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <!--引入sidebar-->
+        <div th:replace="commons/bar::#sidebar(activeUri='userMsgs')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div>
+                <h2>
+                    <a class="btn btn-sm btn-success" href="#" th:href="@{/userMsg}">添加用户</a>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadFile">
+                        批量上传
+                    </button>
+                    <div class="modal fade" id="uploadFile">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <!--模态框头部-->
+                                <div class="modal-header">
+                                    <div>
+                                        <span>Excel文件上传</span>
+                                    </div>
+                                    <div>
+                                        <strong class="alert alert-info small">格式请参照示例图片</strong>
+                                        <div>
+                                            <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3" />
+                                            <img src="/asserts/img/uploadFilesDemo.png" style="width: 400px" class="img-rounded">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--主体-->
+                                <div class="modal-body">
+                         <span class="btn default btn-file">
+                            <input type="file" id="uploadFiles" name="uploadFiles"
+                                   class="file-loading btn btn-primary btn-sm"/>
+                        </span>
+                                </div>
+                                <!--底部-->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modalControl" onclick="f5()">关闭</button>
+                                    <!--<a th:href="@{/userMsgs}" class="btn btn-secondary"  data-dismiss="modal">关闭</a>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-responsive-sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>用户工号</th>
+                        <th>用户姓名</th>
+                        <th>用户性别</th>
+                        <th>用户部门序号</th>
+                        <th>用户部门名称</th>
+                        <th>用户照片</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="userMsg:${pageInfo.list}">
+                        <td th:text="${userMsg.id}">
+                        </td>
+                        <td th:text="${userMsg.userid}">
+                        </td>
+                        <td th:text="${userMsg.username}">
+                        </td>
+                        <td th:text="${userMsg.gender}==1?'男':'女'">
+                        </td>
+                        <td th:text="${userMsg.deptid}">
+                        </td>
+                        <td th:text="${userMsg.dept.deptname}">部门</td>
+
+                        <td>
+                            <img th:src="@{/userpic/{userpic}(userpic=${userMsg.userpic})}"
+                                 class="img-rounded" width="80px">
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" th:href="@{/userMsg/}+${userMsg.id}">编辑</a>
+                            <button th:attr="del_uri=@{/userMsg/}+${userMsg.id}"
+                                    class="btn btn-sm btn-danger deleteBtn">
+                                删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li>
+                            <a th:if="${not isFirstPage}"
+                               th:href="@{${'userMsgs'}(pageNum=${pageNum -1},pageSize=${pageSize})}"
+                               aria-label="Previous" class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                            <a th:if="${isFirstPage}" href="javascript:void(0);" aria-label="Previous"
+                               class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li th:each="pageNo : ${#numbers.sequence(1, totalPages)}">
+                            <a th:if="${pageNum eq pageNo}" href="javascript:void(0);" class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                            <a th:if="${not (pageNum eq pageNo)}"
+                               th:href="@{${'userMsgs'}(pageNum=${pageNo},pageSize=${pageSize})}"
+                               class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:if="${not isLastPage}"
+                               th:href="@{${'userMsgs'}(pageNum=${pageNum+1},pageSize=${pageSize})}" aria-label="Next"
+                               class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            <a th:if="${isLastPage}" href="javascript:void(0);" aria-label="Next" class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+        <form id="deleteRootForm" method="post">
+            <input type="hidden" name="_method" value="delete"/>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+        th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+<script type="text/javascript" src="asserts/js/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.3/popper.js}"></script>
+<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.1.3/js/bootstrap.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-fileinput/4.4.8/js/fileinput.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-fileinput/4.4.8/js/locales/zh.js}"></script>
+<script>
+    $("#uploadFiles").fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: "/userMsg/uploadFiles", //上传的地址
+        allowedFileExtensions: ['xls', 'xlsx'],//配置允许文件上传的类型
+        uploadAsync: true, //默认异步上传
+        showUpload: true, //是否显示上传按钮
+        showRemove: true, //显示移除按钮
+        autoReplace: true,
+        showPreview: false, //是否显示预览
+        showCaption: true,//是否显示标题
+        browseClass: "btn btn-primary", //按钮样式
+        dropZoneEnabled: false,//是否显示拖拽区域
+        maxFileCount: 1, //表示允许同时上传的最大文件个数
+        validateInitialCount: true
+    }).on("fileuploaded", function (event,data,previewId,index) {
+        var data=data.jqXHR.responseJSON;
+        /* var ImgUploadMsg=$("#ImgUploadMsg").val();*/
+        if (data===true){
+            alert("批量添加成功");
+        }else {
+            alert("批量添加失败")
+        }
+    })
+</script>
+<script type="text/javascript" src="asserts/js/feather.min.js" th:src="@{/asserts/js/feather.min.js}"></script>
+<script>
+    feather.replace()
+</script>
+<script>
+    $(".deleteBtn").click(function () {
+        //删除当前员工的
+        $("#deleteRootForm").attr("action", $(this).attr("del_uri")).submit();
+        return false;
+    });
+</script>
+
+</main>
+</div>
+</div>
+</body>
+</html>

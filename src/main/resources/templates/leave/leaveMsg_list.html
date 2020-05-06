@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人历史请假信息</title>
+    <!-- 移动设备友好-->
+    <meta name="view-port" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <link href="#" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="commons/bar::topbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <!--引入sidebar-->
+        <div th:replace="commons/bar::#userbar(activeUri='userAttenceMsgs.html')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <h2><a class="btn btn-sm btn-success" href="../camera" th:href="@{/userLeave}">新增请假信息</a></h2>
+            <div class="table-responsive text-center">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>请假开始时间</th>
+                        <th>请假结束时间</th>
+                        <th>请假原因描述</th>
+                        <th>是否通过</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="leaveMsg:${leaveMsgPageInfo.list}">
+                        <td th:text="${leaveMsg.id}"></td>
+                        <td th:text="${leaveMsg.failStart}"></td>
+                        <td th:text="${leaveMsg.failEnd}"></td>
+                        <td th:text="${leaveMsg.description}"></td>
+                        <td th:text="${leaveMsg.access}==1?'通过':'不通过'"></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" th:href="@{/leaveMsg/}+${leaveMsg.id}" disabled >编辑</button>
+                            <button th:attr="del_uri=@{/leaveMsg/}+${leaveMsg.id}" class="btn btn-sm btn-danger deleteBtn">
+                                删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li>
+                            <a th:if="${not isFirstPage}"
+                               th:href="@{${'leaveMsgs'}(pageNum=${pageNum -1},pageSize=${pageSize})}"
+                               aria-label="Previous" class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                            <a th:if="${isFirstPage}" href="javascript:void(0);" aria-label="Previous"
+                               class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li th:each="pageNo : ${#numbers.sequence(1, totalPages)}">
+                            <a th:if="${pageNum eq pageNo}" href="javascript:void(0);" class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                            <a th:if="${not (pageNum eq pageNo)}"
+                               th:href="@{${'leaveMsgs'}(pageNum=${pageNo},pageSize=${pageSize})}" class="page-link">
+                                <span th:text="${pageNo}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:if="${not isLastPage}"
+                               th:href="@{${'leaveMsgs'}(pageNum=${pageNum+1},pageSize=${pageSize})}" aria-label="Next"
+                               class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            <a th:if="${isLastPage}" href="javascript:void(0);" aria-label="Next" class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+        <form id="deleteRootForm" method="post">
+            <input type="hidden" name="_method" value="delete"/>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+        th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+<script type="text/javascript" src="asserts/js/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.3/popper.js}"></script>
+<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.1.3/js/bootstrap.js}"></script>
+
+<!-- Icons -->
+<script type="text/javascript" src="asserts/js/feather.min.js" th:src="@{/static/asserts/js/feather.min.js}"></script>
+<script>
+    feather.replace()
+</script>
+
+
+</main>
+</div>
+</div>
+</body>
+</html>

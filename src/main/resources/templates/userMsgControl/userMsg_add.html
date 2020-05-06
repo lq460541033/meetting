@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="添加设备">
+    <meta name="author" content="white.hou">
+    <title>编辑用户</title>
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/webjars/bootstrap-fileinput/4.4.8/css/fileinput.css}" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="commons/bar::topbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <!--引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar(activeUri='userMsgs')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <!--需要区分是员工修改还是添加；-->
+            <form th:action="@{/userMsg}" method="post" autocomplete="off" id="from-addOrUpdate">
+                <input type="hidden" name="_method" value="put" th:if="${userMsg!=null}"/>
+                <strong type="hidden" class="alert alert-warning" th:if="${msg!=null}">Warning!</strong>
+                <input type="hidden" name="id" th:if="${userMsg!=null}" th:value="${id}">
+                <div>
+                <div class="form-group">
+                    <label>用户工号</label>
+                    <input name="userid" type="text" class="form-control" required id="userid"
+                           th:value="${userMsg!=null}?${userMsg.userid}" style="width: 200px">
+                </div>
+                <div class="form-group">
+                    <label>用户姓名</label>
+                    <input name="username" type="text" class="form-control" required
+                           th:value="${userMsg!=null}?${userMsg.username}" style="width: 200px">
+                </div>
+                </div>
+                <div class="form-group">
+                    <label>用户性别</label>
+                    <label class="radio-inline">
+                        <input type="radio" id="man" value="1" name="gender" required>男
+                        <input type="radio" id="woman" value="0" name="gender" required>女
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="deptid">请选择科室</label>
+                    <select class="form-control " id="deptid" name="deptid">
+                        <option th:each="deptMsg:${deptMsgs}" th:value="${deptMsg.deptid}"
+                                th:text="${deptMsg.deptname}" class="mb-auto"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label th:text="${userMsg!=null}?'原图片为： ':''"></label>
+                    <img type="hidden" th:if="${userMsg!=null}" th:src="@{/userpic/{userpic}(userpic=${userMsg.userpic})}"
+                         class="img-fluid" width="80px" readonly>
+                </div>
+                <div class="form-group">
+                    <span>请选择您要添加的图片</span>
+                    <div>
+                        <span class="btn default btn-file">
+                            <input type="file" id="uploadImg" name="userpic1"
+                                   class="file-loading btn btn-primary btn-sm"/>
+                        </span>
+                        <input type="hidden" name="userpic" value="" id="realUserpic">
+                    </div>
+                    <!--<input type="hidden" th:value="${ImgUploadMsg}" id="ImgUploadMsg">-->
+                </div>
+                <button type="submit" class="btn btn-primary" th:text="${userMsg!=null}?'修改':'添加'"
+                        style="display: none" id="sub" onclick="checkUserId()">添加
+                </button>
+            </form>
+        </main>
+    </div>
+</div>
+<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+        th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+<script type="text/javascript" src="asserts/js/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.3/popper.js}"></script>
+<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.1.3/js/bootstrap.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-fileinput/4.4.8/js/fileinput.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-fileinput/4.4.8/js/locales/zh.js}"></script>
+<script>
+    $("#uploadImg").fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: "/userMsg/uploadImg", //上传的地址
+        allowedFileTypes: ['image'],//配置允许文件上传的类型
+        allowedPreviewTypes: ['image'],//配置所有的被预览文件类型
+        allowFileTypes: ['jpg', 'jpeg'],
+        uploadAsync: true, //默认异步上传
+        showUpload: true, //是否显示上传按钮
+        showRemove: true, //显示移除按钮
+        autoReplace: true,
+        maxFileSize:300,
+        showPreview: true, //是否显示预览
+        showCaption: true,//是否显示标题
+        browseClass: "btn btn-primary", //按钮样式
+      /*  layoutTemplates:{
+          actionUpload:true,
+          actionZoom:true,
+          actionDelete:true
+        },*/
+        dropZoneEnabled: false,//是否显示拖拽区域
+        maxFileCount: 1, //表示允许同时上传的最大文件个数
+        validateInitialCount: true
+    }).on("fileuploaded", function (event,data,previewId,index) {
+        var a=data.files[0].name;
+        $("#realUserpic").val(a);
+        var data=data.jqXHR.responseJSON;
+       /* var ImgUploadMsg=$("#ImgUploadMsg").val();*/
+        if (data===true){
+            alert("图片保存成功");
+            document.getElementById("sub").style.display = "block";
+        }else {
+            alert("图片上传失败，请移除后重新选择")
+        }
+    })
+</script>
+<script type="text/javascript">
+    function checkUserId() {
+        var userFullId=document.getElementById("userid").value;
+        var picUserId=document.getElementById("realUserpic").value.split(".")[0];
+        if (userFullId!==picUserId){
+            alert("您输入的工号和已上传图片名不一致，请检查");
+            document.getElementById("userid").value="";
+       /*     var a;
+            a=confirm("您输入的工号和已上传图片名不一致,是否清除已上传图片信息重新上传");
+            if (a===true){
+            } else {
+                document.getElementById("userid").value="";
+                alert("用户工号已清除，请重新输入")
+            }*/
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.swf.attence.mapper.UserMsgMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.swf.attence.entity.UserMsg">
+        <id column="id" property="id" />
+        <result column="userid" property="userid" />
+        <result column="username" property="username" />
+        <result column="gender" property="gender" />
+        <result column="deptid" property="deptid" />
+        <result column="userpic" property="userpic" />
+        <result column="userpassword" property="userpassword" />
+    </resultMap>
+    <resultMap id="UserMsgAndDeptMsg" type="com.swf.attence.entity.UserMsg">
+        <id column="u_id" property="id"/>
+        <result column="userid" property="userid"/>
+        <result column="username" property="username"/>
+        <result column="gender" property="gender"/>
+        <result column="u_deptid" property="deptid"/>
+        <result column="userpic" property="userpic"/>
+        <collection property="dept" ofType="com.swf.attence.entity.DeptMsg">
+            <result column="d_id" property="id"/>
+            <result column="dept_id" property="deptid"/>
+            <result column="deptname" property="deptname"/>
+        </collection>
+    </resultMap>
+    
+    <select id="selectUserMsgAndDeptMsg" resultMap="UserMsgAndDeptMsg">
+        select  u.id as u_id ,u.userid,u.username,u.deptid as u_deptid,u.gender,u.userpic ,d.id as d_id,d.deptid as dept_id,d.deptname
+        from user_msg u
+            LEFT JOIN
+            dept_msg d  on u.deptid=d.deptid
+        where 1=1
+    </select>
+    <select id="selectUserMsgAndDeptMsgById" resultMap="UserMsgAndDeptMsg">
+        select  u.id as u_id ,u.userid,u.username,u.deptid as u_deptid,u.gender,u.userpic ,d.id as d_id,d.deptid as dept_id,d.deptname
+        from user_msg u
+            LEFT JOIN
+            dept_msg d  on u.deptid=d.deptid
+    <!--   <where>
+           <if test="u.id!=null and !&quot;&quot;.equals(u.id.trim())">
+               and u.id=#{id}
+           </if>
+           <if test="u.userid!=null and !&quot;&quot;.equals(u.userid.trim())">
+               and  u.userid=#{userid}
+           </if>
+       </where>-->
+        where u.id=#{id}
+    </select>
+    <select id="selectUserMsgAndDeptMsgByUserid" resultMap="UserMsgAndDeptMsg">
+        select  u.id as u_id ,u.userid,u.username,u.deptid as u_deptid,u.gender,u.userpic ,d.id as d_id,d.deptid as dept_id,d.deptname
+        from user_msg u
+        LEFT JOIN
+        dept_msg d  on u.deptid=d.deptid
+        where u.userid=#{userid}
+    </select>
+</mapper>

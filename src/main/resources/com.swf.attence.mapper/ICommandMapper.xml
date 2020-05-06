@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.swf.attence.mapper.ICommandMapper">
+    <insert id="insertIntoDatabase">
+        insert into ${todayTable} (id, icommand_time, icommand_cameraid, icommand_userid, icommand_username)
+        values
+       (id=#{ic.id},icommand_time=#{ic.icommandTime},icommand_cameraid=#{ic.icommandCameraid},icommand_userid=#{ic.icommandUserid},icommand_username=#{ic.icommandUsername})
+    </insert>
+</mapper>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="添加设备">
+    <meta name="author" content="white.hou">
+    <title>编辑事务</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.css}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <!--  <link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">-->
+    <link th:href="@{/webjars/bootstrap-datetimepicker/2.4.2/css/bootstrap-datetimepicker.css}" rel="stylesheet"
+          type="text/css">
+    <link th:href="@{/webjars/bootstrap-datetimepicker/2.4.2/css/bootstrap-datetimepicker.min.css}" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<!--引入抽取的topbar-->
+<!--模板名：会使用thymeleaf的前后缀配置规则进行解析-->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar(activeUri='stateControls')"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <!--需要区分是员工修改还是添加；-->
+            <form th:action="@{/stateControl}" method="post" autocomplete="off" id="from-addOrUpdate">
+                <!--发送put请求修改员工数据-->
+                <!--
+                1、SpringMVC中配置HiddenHttpMethodFilter;（SpringBoot自动配置好的）
+                2、页面创建一个post表单
+                3、创建一个input项，name="_method";值就是我们指定的请求方式
+                -->
+                <input type="hidden" name="_method" value="put" th:if="${stateControl!=null}"/>
+                <strong type="hidden" class="alert alert-warning" th:if="${msg!=null}">Warning!</strong>
+                <input type="hidden" name="id" th:if="${stateControl!=null}" th:value="${id}">
+                <div class="form-group">
+                    <label>请假事由序号</label>
+                    <input name="failid" type="text" class="form-control" required
+                           th:value="${stateControl!=null}?${stateControl.failid}" style="width: 200px">
+                </div>
+                <div class="form-group">
+                    <label>请假事由名称</label>
+                    <input name="stateName" type="text" class="form-control" required
+                           th:value="${stateControl!=null}?${stateControl.stateName}" style="width: 200px">
+                </div>
+                <div class="form-group">
+                    <label>开始时间</label>
+                    <input name="beginTime" class="form_datetime form-control" required="required" id="from-startTime"
+                           style="width: 200px" th:value="${stateControl!=null}?${stateControl.beginTime}">
+                </div>
+                <div class="form-group">
+                    <label>结束时间</label>
+                    <input name="closeTime" class="form_datetime form-control" required="required" id="from-endTime"
+                           style="width: 200px" th:value="${stateControl!=null}?${stateControl.closeTime}">
+                </div>
+                <button type="submit" class="btn btn-primary" th:text="${stateControl!=null}?'修改':'添加'">添加</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+        th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+<script type="text/javascript" src="asserts/js/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.3/popper.js}"></script>
+<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.1.3/js/bootstrap.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-datetimepicker/2.4.2/js/bootstrap-datetimepicker.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-datetimepicker/2.4.2/js/locales/bootstrap-datetimepicker.fr.js}"></script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-datetimepicker/2.4.2/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+<script type="text/javascript">
+    //日期插件
+    $("#from-startTime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        todayHighlight: 1,//今天高亮
+        keyboardNavigation: true,
+        maxView: 3,
+        minView: 0,//设置显示位置
+        language: 'zh-CN',
+        startView: 2,
+        forceParse: 0,
+        todayBtn: true,
+        showMeridian: 1,
+        autoclose: true//选择后自动关闭
+    }).on('changeDate', function (ev) {
+        var starttime = $("#from-startTime").val();
+        $("#from-endTime").datetimepicker('setStartDate', starttime);
+        $("#from-startTime").datetimepicker('hide');
+    });
+
+    $("#from-endTime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        todayHighlight: 1,//今天高亮
+        keyboardNavigation: true,
+        maxView: 3,
+        minView: 0,//设置显示位置
+        language: 'zh-CN',
+        startView: 2,
+        forceParse: 0,
+        todayBtn: true,
+        showMeridian: 1,
+        autoclose: true//选择后自动关闭
+        /* onSelect:function (endTime) {
+             $("#from-endTime").datetimepicker("option","endDate",endTime)
+         }*/
+    }).on('changeDate', function (ev) {
+        $("#from-startTime").datetimepicker('setEndDate', $("#from-endTime").val());
+        $("#from-endTime").datetimepicker('hide')
+    })
+</script>
+<!-- Icons -->
+<script type="text/javascript" src="asserts/js/feather.min.js" th:src="@{/asserts/js/feather.min.js}"></script>
+<script>
+    feather.replace()
+</script>
+</body>
+
+</html>
