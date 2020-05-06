@@ -9,6 +9,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ import javax.annotation.Resource;
  */
 @Service
 @Component
-public class ServerMQTT {
+public class ServerMQTT implements ApplicationRunner {
     @Resource
     PushCallback pushCallback;
     // tcp://MQTT安装的服务器地址:MQTT定义的端口号
@@ -42,11 +44,11 @@ public class ServerMQTT {
      *
      * @throws MqttException
      */
-    public ServerMQTT() throws MqttException {
-        // MemoryPersistence设置clientid的保存形式，默认为以内存保存
-        client = new MqttClient(HOST, clientid, new MemoryPersistence());
-        connect();
-    }
+//    public ServerMQTT() throws MqttException {
+//        // MemoryPersistence设置clientid的保存形式，默认为以内存保存
+//        client = new MqttClient(HOST, clientid, new MemoryPersistence());
+//        connect();
+//    }
 
     /**
      * 用来连接服务器
@@ -104,5 +106,12 @@ public class ServerMQTT {
         server.message.setPayload("test".getBytes("UTF-8"));
         server.publish(server.topic11, server.message);
         System.out.println(server.message.isRetained() + "------ratained状态");
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        // MemoryPersistence设置clientid的保存形式，默认为以内存保存
+        client = new MqttClient(HOST, clientid, new MemoryPersistence());
+        connect();
     }
 }
