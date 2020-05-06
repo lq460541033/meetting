@@ -3,10 +3,13 @@ package com.swf.attence.hikConfig;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import com.swf.attence.mqtt.ServerMQTT;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -459,6 +462,27 @@ public class FDLibBox {
         } else if (m_UploadStatus.longValue() == 1) {
             System.out.println("progress = " + pInt.getValue());
             System.out.println("Uploading Succ!!!!!");
+
+            ServerMQTT server = null;
+            try {
+                server = new ServerMQTT();
+                server.message = new MqttMessage();
+                /* Qos服务质量等级：
+                 * 0，最多一次，不管是否接收到；
+                 * 1，最少一次，保证信息将会被至少发送一次给接受者
+                 * 2，只一次，确保每个消息都只被接收到的一次，他是最安全也是最慢的服务等级
+                 */
+                server.message.setQos(2);
+                server.message.setRetained(true);
+                server.message.setPayload("用户图片上传成功".getBytes("UTF-8"));
+                server.publish(server.topic11, server.message);
+                System.out.println(server.message.isRetained() + "------ratained状态");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+
         } else {
             System.out.println("NET_DVR_GetUploadState fail  m_UploadStatus=" + m_UploadStatus);
             System.out.println("NET_DVR_GetUploadState fail,error=" + hCNetSDK.NET_DVR_GetLastError());

@@ -39,9 +39,9 @@ import static com.swf.attence.controller.UploadController.USERDATAPATH;
 @Service
 public class CameraMsgServiceImpl extends ServiceImpl<CameraMsgMapper, CameraMsg> implements ICameraMsgService {
     @Autowired
-    private CameraMsgMapper cameraMsgMapper;
+     CameraMsgMapper cameraMsgMapper;
     @Autowired
-    private IUserMsgService iUserMsgService;
+     IUserMsgService iUserMsgService;
 
 
 
